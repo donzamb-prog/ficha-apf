@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Autorização do APF - GE Memorial 350/SP</title>
+    <!-- Biblioteca para gerar PDF no celular e computador -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+        @page {
+            size: A4;
+            margin: 15mm 15mm;
+        }
+        body {
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            color: #1a1a1a;
+            background-color: #f4f6f7;
+            font-size: 10pt;
+            line-height: 1.4;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+        
+        /* Painel de Botões */
+        .action-bar {
+            background-color: #1a1a1a;
+            padding: 12px 20px;
+            border-radius: 6px;
+            margin-bottom: 25px;
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            border-bottom: 3px solid #f1b418;
+        }
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 9pt;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: background 0.2s;
+        }
+        .btn-pdf { background-color: #f1b418; color: #1a1a1a; }
+        .btn-pdf:hover { background-color: #dca311; }
+        .btn-share { background-color: #2e7d32; color: #ffffff; }
+        .btn-share:hover { background-color: #1b5e20; }
+        .btn-clear { background-color: #e0e0e0; color: #424242; }
+        .btn-clear:hover { background-color: #bdbdbd; }
+
+        /* Cabeçalho */
+        .header-table {
+            display: table;
+            width: 100%;
+            border-bottom: 3px solid #1a1a1a;
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+        }
+        .header-row { display: table-row; }
+        .header-logo {
+            display: table-cell;
+            width: 90px;
+            vertical-align: middle;
+            padding-right: 20px;
+        }
+        .header-logo img {
+            max-width: 90px;
+            max-height: 90px;
+            display: block;
+        }
+        .header-text {
+            display: table-cell;
+            vertical-align: middle;
+        }
+        h1 {
+            font-size: 15pt;
+            color: #1a1a1a;
+            margin: 0 0 5px 0;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+        .subtitle {
+            font-size: 11pt;
+            color: #555;
+            margin: 0;
+            font-weight: bold;
+        }
+
+        /* Seções e Formulários */
+        .section {
+            margin-bottom: 20px;
+        }
+        .section-title {
+            font-size: 10.5pt;
+            font-weight: bold;
+            color: #ffffff;
+            background-color: #1a1a1a;
+            padding: 6px 10px;
+            margin: 0 0 12px 0;
+            text-transform: uppercase;
+            border-left: 5px solid #f1b418;
+            letter-spacing: 0.5px;
+        }
+        .grid-table {
+            display: table;
+            width: 100%;
+        }
+        .grid-row { display: table-row; }
+        .grid-cell {
+            display: table-cell;
+            padding: 5px 8px;
+            vertical-align: top;
+        }
+        .w-25 { width: 25%; }
+        .w-33 { width: 33.33%; }
+        .w-40 { width: 40%; }
+        .w-50 { width: 50%; }
+        .w-60 { width: 60%; }
+        .w-75 { width: 75%; }
+        .w-100 { width: 100%; }
+        
+        .field-label {
+            font-size: 8pt;
+            font-weight: bold;
+            color: #424242;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+            display: block;
+        }
+        input[type="text"], input[type="email"] {
+            width: 100%;
+            padding: 6px 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 9.5pt;
+            color: #2c3e50;
+            background-color: #fafafa;
+        }
+        input[type="text"]:focus, input[type="email"]:focus {
+            border-color: #f1b418;
+            outline: none;
+            background-color: #fff;
+        }
+        input[disabled] {
+            background-color: #f1f2f6;
+            color: #7f8c8d;
+            border-color: #dcdde1;
+            font-weight: 500;
+        }
+
+        .declaration-text {
+            font-size: 9.5pt;
+            text-align: justify;
+            line-height: 1.5;
+            margin: 25px 0;
+            padding: 0 8px;
+        }
+        .date-section {
+            margin-top: 20px;
+            margin-bottom: 25px;
+            padding-left: 8px;
+            font-size: 9.5pt;
+        }
+        .inline-input {
+            border: none !important;
+            border-bottom: 1px solid #1a1a1a !important;
+            background: transparent !important;
+            padding: 0 5px !important;
+            width: auto;
+            font-size: 9.5pt;
+            text-align: center;
+        }
+
+        /* Assinaturas */
+        .signature-container {
+            display: table;
+            width: 100%;
+            margin-top: 45px;
+        }
+        .signature-row { display: table-row; }
+        .signature-cell {
+            display: table-cell;
+            width: 50%;
+            padding: 0 20px;
+            text-align: center;
+            vertical-align: top;
+        }
+        .signature-line {
+            border-top: 1px solid #1a1a1a;
+            margin-bottom: 5px;
+            margin-top: 30px;
+        }
+        .signature-label {
+            font-size: 8.5pt;
+            font-weight: bold;
+            color: #1a1a1a;
+        }
+        .signature-sub {
+            font-size: 8pt;
+            color: #7f8c8d;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        
+        <!-- Painel de Ações -->
+        <div class="action-bar">
+            <button type="button" class="btn btn-clear" onclick="limparFormulario()">Limpar Dados</button>
+            <button type="button" class="btn btn-share" onclick="compartilharPagina()">Compartilhar</button>
+            <button type="button" class="btn btn-pdf" onclick="gerarPDF()">Salvar em PDF</button>
+        </div>
+
+        <form id="fichaForm">
+            <!-- Cabeçalho institucional -->
+            <div class="header-table">
+                <div class="header-row">
+                    <div class="header-logo">
+                        <img src="logo GEM.png" alt="Logo GEM 350">
+                    </div>
+                    <div class="header-text">
+                        <h1>Autorização do Assessor Pessoal de Formação (APF)</h1>
+                        <div class="subtitle">Para Participação de Cursos Técnicos</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DADOS DO CURSO -->
+            <div class="section">
+                <div class="section-title">Dados do Curso</div>
+                <div class="grid-table">
+                    <div class="grid-row">
+                        <div class="grid-cell w-100">
+                            <label class="field-label">Nome do Curso</label>
+                            <input type="text" name="nome_curso">
+                        </div>
+                    </div>
+                    <div class="grid-row">
+                        <div class="grid-cell w-33">
+                            <label class="field-label">Data</label>
+                            <input type="text" name="data_curso" placeholder="Ex: DD/MM/AAAA">
+                        </div>
+                        <div class="grid-cell w-33">
+                            <label class="field-label">Local</label>
+                            <input type="text" name="local_curso">
+                        </div>
+                        <div class="grid-cell w-33">
+                            <label class="field-label">Distrito</label>
+                            <input type="text" name="distrito_curso">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DADOS DA UEL -->
+            <div class="section">
+                <div class="section-title">Dados da UEL (Unidade Escoteira Local)</div>
+                <div class="grid-table">
+                    <div class="grid-row">
+                        <div class="grid-cell w-75">
+                            <label class="field-label">Nome da UEL</label>
+                            <input type="text" value="Grupo Escoteiro Memorial" disabled>
+                        </div>
+                        <div class="grid-cell w-25">
+                            <label class="field-label">Numeral</label>
+                            <input type="text" value="350/SP" disabled>
+                        </div>
+                    </div>
+                    <div class="grid-row">
+                        <div class="grid-cell w-60">
+                            <label class="field-label">Endereço</label>
+                            <input type="text" value="Rua Doutor Altair Martins, 520 - Raposo Tavares, Osasco SP" disabled>
+                        </div>
+                        <div class="grid-cell w-40">
+                            <label class="field-label">E-mail institucional</label>
+                            <input type="email" name="uel_email">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DADOS DO PARTICIPANTE -->
+            <div class="section">
+                <div class="section-title">Dados do Participante</div>
+                <div class="grid-table">
+                    <div class="grid-row">
+                        <div class="grid-cell w-100">
+                            <label class="field-label">Nome do Participante</label>
+                            <input type="text" name="part_nome">
+                        </div>
+                    </div>
+                    <div class="grid-row">
+                        <div class="grid-cell w-25">
+                            <label class="field-label">Registro Unificado</label>
+                            <input type="text" name="part_registro">
+                        </div>
+                        <div class="grid-cell w-25">
+                            <label class="field-label">Telefone</label>
+                            <input type="text" name="part_tel">
+                        </div>
+                        <div class="grid-cell w-50">
+                            <label class="field-label">Nível de Formação Atual</label>
+                            <input type="text" name="part_nivel">
+                        </div>
+                    </div>
+                    <div class="grid-row">
+                        <div class="grid-cell w-100">
+                            <label class="field-label">E-mail</label>
+                            <input type="email" name="part_email">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DADOS DO APF -->
+            <div class="section">
+                <div class="section-title">Dados do Assessor Pessoal de Formação (APF)</div>
+                <div class="grid-table">
+                    <div class="grid-row">
+                        <div class="grid-cell w-100">
+                            <label class="field-label">Nome do APF</label>
+                            <input type="text" name="apf_nome">
+                        </div>
+                    </div>
+                    <div class="grid-row">
+                        <div class="grid-cell w-33">
+                            <label class="field-label">Registro</label>
+                            <input type="text" name="apf_registro">
+                        </div>
+                        <div class="grid-cell w-33">
+                            <label class="field-label">Telefone</label>
+                            <input type="text" name="apf_tel">
+                        </div>
+                        <div class="grid-cell w-33">
+                            <label class="field-label">E-mail</label>
+                            <input type="email" name="apf_email">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DADOS DO DIRETOR PRESIDENTE -->
+            <div class="section">
+                <div class="section-title">Dados do Diretor Presidente da UEL</div>
+                <div class="grid-table">
+                    <div class="grid-row">
+                        <div class="grid-cell w-100">
+                            <label class="field-label">Nome do Diretor Presidente</label>
+                            <input type="text" name="pres_nome">
+                        </div>
+                    </div>
+                    <div class="grid-row">
+                        <div class="grid-cell w-33">
+                            <label class="field-label">Registro</label>
+                            <input type="text" name="pres_registro">
+                        </div>
+                        <div class="grid-cell w-33">
+                            <label class="field-label">Telefone</label>
+                            <input type="text" name="pres_tel">
+                        </div>
+                        <div class="grid-cell w-33">
+                            <label class="field-label">E-mail</label>
+                            <input type="email" name="pres_email">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TEXTO DE ANUÊNCIA -->
+            <div class="declaration-text">
+                Declaro estar ciente dos requisitos exigidos para a participação no curso técnico acima mencionado e, validando as informações aqui preenchidas, concedo a devida autorização e anuência institucional para a participação do candidato.
+            </div>
+
+            <!-- DATA -->
+            <div class="date-section">
+                Local: <input type="text" class="inline-input" style="width: 180px;" value="Osasco / SP">, 
+                <input type="text" class="inline-input" style="width: 40px;" placeholder="DD"> de 
+                <input type="text" class="inline-input" style="width: 110px;" placeholder="Mês"> de 20<input type="text" class="inline-input" style="width: 30px;" value="26">.
+            </div>
+
+            <!-- ASSINATURAS -->
+            <div class="signature-container">
+                <div class="signature-row">
+                    <div class="signature-cell">
+                        <div class="signature-line"></div>
+                        <div class="signature-label">Assessor Pessoal de Formação (APF)</div>
+                        <div class="signature-sub">Assinatura</div>
+                    </div>
+                    <div class="signature-cell">
+                        <div class="signature-line"></div>
+                        <div class="signature-label">Diretor Presidente da UEL</div>
+                        <div class="signature-sub">Assinatura e Carimbo</div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        function limparFormulario() {
+            if(confirm("Tem certeza que deseja apagar todas as informações digitadas?")) {
+                document.getElementById("fichaForm").reset();
+            }
+        }
+
+        function compartilharPagina() {
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Ficha de Autorização de Curso Técnico - APF',
+                    text: 'Formulário de Autorização do Grupo Escoteiro Memorial 350 SP',
+                    url: window.location.href
+                }).catch(console.error);
+            } else {
+                navigator.clipboard.writeText(window.location.href);
+                alert("Link da página copiado para a área de transferência!");
+            }
+        }
+
+        function gerarPDF() {
+            const elemento = document.querySelector('.container');
+            const actionBar = document.querySelector('.action-bar');
+            
+            // Força esconder os botões antes do "print" digital
+            actionBar.style.setProperty('display', 'none', 'important');
+
+            const opcoes = {
+                margin:       [10, 10, 10, 10],
+                filename:     'autorizacao_apf_memorial_350.pdf',
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2, useCORS: true, logging: false },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+
+            html2pdf().set(opcoes).from(elemento).save().then(() => {
+                actionBar.style.setProperty('display', 'flex', 'important');
+            }).catch(err => {
+                actionBar.style.setProperty('display', 'flex', 'important');
+                window.print();
+            });
+        }
+    </script>
+</body>
+</html>
